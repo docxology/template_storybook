@@ -32,22 +32,22 @@ research manuscript.
 
 Concept DOI: [10.5281/zenodo.21176000](https://doi.org/10.5281/zenodo.21176000) | Version DOI: [10.5281/zenodo.21176001](https://zenodo.org/records/21176001) | Repository: [docxology/template_storybook](https://github.com/docxology/template_storybook)
 
-Publishing surface — 20 platforms, 1 published:
+Publishing surface — 20 platforms, 8 published:
 
 | Platform | Tier | Status | Reference | Credentials |
 | --- | --- | --- | --- | --- |
-| zenodo | first-class | 🔵 reserved | [10.5281/zenodo.21176000](https://doi.org/10.5281/zenodo.21176000) | `ZENODO_API_TOKEN` |
-| github | first-class | ✅ published | [docxology/template_storybook](https://github.com/docxology/template_storybook) | `GITHUB_TOKEN` |
+| zenodo | first-class | ✅ published | [10.5281/zenodo.21176000](https://doi.org/10.5281/zenodo.21176000) | `ZENODO_API_TOKEN` |
+| github | first-class | ✅ published | [https://github.com/docxology/template_storybook/releases/tag/v0.1.0](https://github.com/docxology/template_storybook/releases/tag/v0.1.0) | `GITHUB_TOKEN` |
 | arxiv | first-class | ⚪ available | — | — |
-| pypi | first-class | ⚪ available | — | `PYPI_TOKEN`, `TESTPYPI_TOKEN` |
-| ipfs_pinata | first-class | ⚪ available | — | `PINATA_JWT` |
+| pypi | first-class | ✅ published | [https://test.pypi.org/project/template-storybook/0.1.0/](https://test.pypi.org/project/template-storybook/0.1.0/) | `PYPI_TOKEN`, `TESTPYPI_TOKEN` |
+| ipfs_pinata | first-class | ✅ published | [https://gateway.pinata.cloud/ipfs/QmPcB1mTMZQb541ZsmwDwc6rQgSTLR4BGYefdTLsj1s5Qy](https://gateway.pinata.cloud/ipfs/QmPcB1mTMZQb541ZsmwDwc6rQgSTLR4BGYefdTLsj1s5Qy) | `PINATA_JWT` |
 | ipfs_web3storage | first-class | ⚪ available | — | `WEB3_STORAGE_TOKEN` |
-| software_heritage | first-class | ⚪ available | — | — |
+| software_heritage | first-class | ✅ published | [https://archive.softwareheritage.org/api/1/origin/save/git/url/https://github.com/docxology/template_storybook/](https://archive.softwareheritage.org/api/1/origin/save/git/url/https://github.com/docxology/template_storybook/) | — |
 | github_pages | first-class | ⚪ available | [docxology/template_storybook](https://github.com/docxology/template_storybook) | `GITHUB_TOKEN` |
 | cloudflare_pages | first-class | ⚪ available | — | `CLOUDFLARE_API_TOKEN` |
-| netlify | first-class | ⚪ available | — | `NETLIFY_AUTH_TOKEN` |
-| huggingface_hub | first-class | ⚪ available | — | `HUGGINGFACE_TOKEN`, `HF_TOKEN` |
-| osf | first-class | ⚪ available | — | `OSF_TOKEN` |
+| netlify | first-class | ✅ published | [https://6a47fd2233010f4eb138cdcd--tranquil-kleicha-0c9203.netlify.app](https://6a47fd2233010f4eb138cdcd--tranquil-kleicha-0c9203.netlify.app) | `NETLIFY_AUTH_TOKEN` |
+| huggingface_hub | first-class | ✅ published | [https://huggingface.co/datasets/ActiveInference/template_storybook](https://huggingface.co/datasets/ActiveInference/template_storybook) | `HUGGINGFACE_TOKEN`, `HF_TOKEN` |
+| osf | first-class | ✅ published | [https://osf.io/xbajh/](https://osf.io/xbajh/) | `OSF_TOKEN` |
 | amazon_kdp | documented | 🟡 planned | — | `AMAZON_KDP_EMAIL`, `AMAZON_KDP_PASSWORD` |
 | google_play_books | documented | 🟡 planned | — | `GOOGLE_PLAY_BOOKS_SERVICE_ACCOUNT_JSON` |
 | gumroad | documented | 🟡 planned | — | `GUMROAD_ACCESS_TOKEN` |
@@ -71,10 +71,10 @@ To regenerate this exemplar from the public monorepo:
 git clone https://github.com/docxology/template
 cd template
 uv sync
-uv run python scripts/02_run_analysis.py --project templates/template_storybook
-uv run python scripts/03_render_pdf.py --project templates/template_storybook
-uv run python scripts/04_validate_output.py --project templates/template_storybook
-uv run python scripts/05_copy_outputs.py --project templates/template_storybook
+uv run python scripts/pipeline/stage_02_analysis.py --project templates/template_storybook
+uv run python scripts/pipeline/stage_03_render.py --project templates/template_storybook
+uv run python scripts/pipeline/stage_04_validate.py --project templates/template_storybook
+uv run python scripts/pipeline/stage_05_copy.py --project templates/template_storybook
 ```
 
 ## Quick start
@@ -82,14 +82,14 @@ uv run python scripts/05_copy_outputs.py --project templates/template_storybook
 From the repository root:
 
 ```bash
-uv run python scripts/02_run_analysis.py --project templates/template_storybook
+uv run python scripts/pipeline/stage_02_analysis.py --project templates/template_storybook
 open projects/templates/template_storybook/output/pdf/the-shape-between.pdf
 ```
 
 Render through the manuscript pipeline as well:
 
 ```bash
-uv run python scripts/03_render_pdf.py --project templates/template_storybook
+uv run python scripts/pipeline/stage_03_render.py --project templates/template_storybook
 ```
 
 ## How it works
@@ -99,6 +99,7 @@ content/story.yaml
         |
         v
 src/storybook/
+  models.py        frozen dataclasses shared across the package: Character, PageSpec, StorybookSpec, RenderResult
   characters.py    cast generation and shape-family validation
   story.py         YAML loader and manifest metadata
   illustration.py  procedural full-page scenes and text overlays

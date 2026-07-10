@@ -138,13 +138,13 @@
     },
     "reports": {
       "exists": true,
-      "file_count": 10,
-      "size_mb": "0.06",
-      "total_size_bytes": 66605,
+      "file_count": 14,
+      "size_mb": "0.07",
+      "total_size_bytes": 76979,
       "largest_files": [
         {
           "name": "evidence_registry.json",
-          "size_mb": "0.05",
+          "size_mb": "0.06",
           "path": "reports/evidence_registry.json"
         },
         {
@@ -159,8 +159,8 @@
         }
       ],
       "extensions": {
-        ".json": 6,
-        ".txt": 1,
+        ".json": 9,
+        ".txt": 2,
         ".md": 3
       }
     },
@@ -189,8 +189,8 @@
       "extensions": {}
     }
   },
-  "total_files": 90,
-  "total_size_mb": 3.4698925018310547,
+  "total_files": 94,
+  "total_size_mb": 3.479785919189453,
   "largest_files": [
     {
       "name": "the-shape-between.pdf",
@@ -235,16 +235,16 @@
       "path": "slides/03_story_and_graphics_slides.log"
     },
     {
+      "name": "evidence_registry.json",
+      "size_mb": "0.06",
+      "category": "reports",
+      "path": "reports/evidence_registry.json"
+    },
+    {
       "name": "_combined_manuscript.log",
       "size_mb": "0.05",
       "category": "pdf",
       "path": "pdf/_combined_manuscript.log"
-    },
-    {
-      "name": "evidence_registry.json",
-      "size_mb": "0.05",
-      "category": "reports",
-      "path": "reports/evidence_registry.json"
     },
     {
       "name": "template_storybook_combined.pdf",
@@ -260,7 +260,7 @@
     "slides": 0.4618701934814453,
     "figures": 1.3586807250976562,
     "data": 0.0052127838134765625,
-    "reports": 0.06351947784423828,
+    "reports": 0.07341289520263672,
     "simulations": 0.0,
     "llm": 0.0,
     "logs": 0.0
@@ -280,7 +280,7 @@
     ".vrb": 3,
     ".snm": 6,
     ".png": 14,
-    ".json": 7,
-    ".txt": 1
+    ".json": 10,
+    ".txt": 2
   }
 }
