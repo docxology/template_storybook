@@ -4,13 +4,13 @@ import hashlib
 import itertools
 import math
 import random
-import textwrap
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
-from .characters import child_pair
+from .characters import character_by_id, child_pair
 from .models import Character, PageSpec, StorybookSpec
+from .text_layout import draw_page_text, load_font, pixel_wrapped_lines, text_height, text_width, wrapped_lines
 
 RGB = tuple[int, int, int]
 
@@ -26,21 +26,6 @@ def _mix(a: RGB, b: RGB, amount: float) -> RGB:
         int(a[1] + (b[1] - a[1]) * amount),
         int(a[2] + (b[2] - a[2]) * amount),
     )
-
-
-def _font(size: int, *, bold: bool = False) -> ImageFont.ImageFont | ImageFont.FreeTypeFont:
-    candidates = [
-        "/System/Library/Fonts/Supplemental/Avenir Next.ttc",
-        "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
-        "/Library/Fonts/Arial.ttf",
-        "DejaVuSans-Bold.ttf" if bold else "DejaVuSans.ttf",
-    ]
-    for candidate in candidates:
-        try:
-            return ImageFont.truetype(candidate, size=size)
-        except OSError:
-            continue
-    return ImageFont.load_default()
 
 
 def _gradient(width: int, height: int, top: RGB, bottom: RGB) -> Image.Image:
@@ -77,50 +62,6 @@ def _draw_yinyang(draw: ImageDraw.ImageDraw, cx: int, cy: int, radius: int, ligh
     draw.ellipse((cx - dot, cy - radius // 2 - dot, cx + dot, cy - radius // 2 + dot), fill=dark)
     draw.ellipse((cx - dot, cy + radius // 2 - dot, cx + dot, cy + radius // 2 + dot), fill=light)
     draw.ellipse(box, outline=_mix(light, dark, 0.45), width=max(4, radius // 70))
-
-
-def _text_width(draw: ImageDraw.ImageDraw, line: str, font: ImageFont.ImageFont | ImageFont.FreeTypeFont) -> int:
-    bbox = draw.textbbox((0, 0), line, font=font)
-    return int(bbox[2] - bbox[0])
-
-
-def _text_height(draw: ImageDraw.ImageDraw, line: str, font: ImageFont.ImageFont | ImageFont.FreeTypeFont) -> int:
-    bbox = draw.textbbox((0, 0), line, font=font)
-    return int(bbox[3] - bbox[1])
-
-
-def _wrapped_lines(text: str, width: int) -> list[str]:
-    lines: list[str] = []
-    for paragraph in text.splitlines():
-        if not paragraph.strip():
-            lines.append("")
-            continue
-        lines.extend(textwrap.wrap(paragraph, width=width))
-    return lines
-
-
-def _pixel_wrapped_lines(
-    draw: ImageDraw.ImageDraw,
-    text: str,
-    font: ImageFont.ImageFont | ImageFont.FreeTypeFont,
-    max_width: int,
-) -> list[str]:
-    lines: list[str] = []
-    for paragraph in text.splitlines():
-        words = paragraph.split()
-        if not words:
-            lines.append("")
-            continue
-        current = words[0]
-        for word in words[1:]:
-            candidate = f"{current} {word}"
-            if _text_width(draw, candidate, font) <= max_width:
-                current = candidate
-            else:
-                lines.append(current)
-                current = word
-        lines.append(current)
-    return lines
 
 
 def _regular_points(
@@ -353,15 +294,15 @@ def _draw_family(draw: ImageDraw.ImageDraw, character: Character, centers: list[
 def _draw_cover_text(image: Image.Image, page: PageSpec) -> None:
     draw = ImageDraw.Draw(image, "RGBA")
     width, height = image.size
-    title_font = _font(108, bold=True)
-    subtitle_font = _font(32, bold=True)
-    detail_font = _font(27)
-    small_font = _font(24, bold=True)
-    title_lines = _wrapped_lines(page.title, 18)
+    title_font = load_font(108, bold=True)
+    subtitle_font = load_font(32, bold=True)
+    detail_font = load_font(27)
+    small_font = load_font(24, bold=True)
+    title_lines = wrapped_lines(page.title, 18)
     info_lines = [line for line in page.text.splitlines() if line.strip()]
     y = 86
     for line in title_lines:
-        x = (width - _text_width(draw, line, title_font)) // 2
+        x = (width - text_width(draw, line, title_font)) // 2
         draw.text((x + 6, y + 6), line, font=title_font, fill=(10, 12, 24, 235))
         draw.text((x, y), line, font=title_font, fill=(255, 249, 236, 255))
         y += 122
@@ -392,11 +333,11 @@ def _draw_cover_text(image: Image.Image, page: PageSpec) -> None:
     text_x = 270
     max_text_width = width - text_x - 116
     if info_lines:
-        subtitle_lines = _pixel_wrapped_lines(draw, info_lines[0], subtitle_font, max_text_width)
+        subtitle_lines = pixel_wrapped_lines(draw, info_lines[0], subtitle_font, max_text_width)
         y_line = bar_top + 38
         for subtitle_line in subtitle_lines:
             draw.text((text_x, y_line), subtitle_line, font=subtitle_font, fill=(255, 249, 236, 255))
-            y_line += _text_height(draw, subtitle_line, subtitle_font) + 10
+            y_line += text_height(draw, subtitle_line, subtitle_font) + 10
     else:
         y_line = bar_top + 38
     y_line += 16
@@ -406,26 +347,6 @@ def _draw_cover_text(image: Image.Image, page: PageSpec) -> None:
         label = line if index == 0 else f"|  {line}"
         draw.text((text_x, y_line), label, font=font, fill=fill)
         y_line += 41
-
-
-def _draw_publication_text(image: Image.Image, page: PageSpec) -> None:
-    draw = ImageDraw.Draw(image, "RGBA")
-    width, height = image.size
-    title_font = _font(58, bold=True)
-    body_font = _font(32)
-    small_font = _font(26)
-    margin = 112
-    panel = (margin - 38, 150, width - margin + 38, height - 170)
-    draw.rounded_rectangle(panel, radius=28, fill=(255, 250, 240, 232), outline=(35, 38, 55, 170), width=4)
-    draw.text((margin, 198), page.title, font=title_font, fill=(24, 28, 42, 255))
-    y = 296
-    for line in _wrapped_lines(page.text, 57):
-        if not line:
-            y += 28
-            continue
-        font = body_font if y < 690 else small_font
-        draw.text((margin, y), line, font=font, fill=(24, 28, 42, 255))
-        y += 43 if font is body_font else 36
 
 
 def _wire_cube_points(cx: int, cy: int, size: int) -> tuple[list[tuple[int, int]], list[tuple[int, int]]]:
@@ -630,58 +551,6 @@ def _draw_vector_garden(draw: ImageDraw.ImageDraw, width: int, height: int, tess
     _draw_character(draw, ciro, (965, 1265), 145)
 
 
-def _overlay_text(image: Image.Image, page: PageSpec) -> None:
-    if page.slug == "cover":
-        _draw_cover_text(image, page)
-        return
-    if page.slug == "publication_information":
-        _draw_publication_text(image, page)
-        return
-    draw = ImageDraw.Draw(image, "RGBA")
-    width, height = image.size
-    title_font = _font(58, bold=True)
-    text_font = _font(37)
-    margin = 86
-    max_chars = 40
-    title_lines = _wrapped_lines(page.title, 24)
-    body_lines = _wrapped_lines(page.text, max_chars)
-    line_gap = 12
-    title_height = 68 * len(title_lines)
-    body_height = 48 * len(body_lines)
-    box_height = title_height + body_height + 72
-    top = height - box_height - 88
-    if page.slug in {"mega_symbol"}:
-        top = 92
-    if page.overlay_box:
-        draw.rounded_rectangle(
-            (margin - 28, top - 30, width - margin + 28, top + box_height),
-            radius=24,
-            fill=(255, 250, 240, 224),
-            outline=(35, 38, 55, 190),
-            width=4,
-        )
-        text_color = (24, 28, 42, 255)
-    else:
-        text_color = (255, 250, 240, 255)
-        shadow_color = (12, 14, 24, 210)
-        y_shadow = top + 4
-        for line in title_lines:
-            draw.text((margin + 4, y_shadow), line, font=title_font, fill=shadow_color)
-            y_shadow += 68
-        y_shadow += line_gap
-        for line in body_lines:
-            draw.text((margin + 4, y_shadow), line, font=text_font, fill=shadow_color)
-            y_shadow += 48
-    y = top
-    for line in title_lines:
-        draw.text((margin, y), line, font=title_font, fill=text_color)
-        y += 68
-    y += line_gap
-    for line in body_lines:
-        draw.text((margin, y), line, font=text_font, fill=text_color)
-        y += 48
-
-
 def render_page_image(spec: StorybookSpec, page: PageSpec, output_path: Path | str) -> Path:
     """Render page image."""
     output = Path(output_path)
@@ -691,6 +560,12 @@ def render_page_image(spec: StorybookSpec, page: PageSpec, output_path: Path | s
     image = _gradient(width, height, a, b)
     draw = ImageDraw.Draw(image, "RGBA")
     tessa, ciro = child_pair(spec.characters)
+    # "cube_family" / "tetra_family" (named "The Square House" / "The Pointed House" in
+    # content/story.yaml, matching the titles of the square_house/pointed_house pages)
+    # carry their own fill/accent for the family shapes drawn below. Fall back to the
+    # child's own colors if a fork's cast omits these optional family records.
+    cube_family = character_by_id(spec.characters, "cube_family") or tessa
+    tetra_family = character_by_id(spec.characters, "tetra_family") or ciro
     _draw_stars(draw, page.slug, width, height, _mix(c, (255, 255, 255), 0.35))
 
     if page.scene == "cosmic_yinyang":
@@ -730,7 +605,7 @@ def render_page_image(spec: StorybookSpec, page: PageSpec, output_path: Path | s
             draw.line((x, 310, x, 1000), fill=(*d, 42), width=3)
         for y_grid in range(390, 1000, 150):
             draw.line((150, y_grid, width - 150, y_grid), fill=(*d, 42), width=3)
-        _draw_family(draw, tessa, [(250, 1110), (470, 1030), (720, 1125), (965, 1038)], 170)
+        _draw_family(draw, cube_family, [(250, 1110), (470, 1030), (720, 1125), (965, 1038)], 170)
         _draw_character(draw, tessa, (width // 2, 680), 250)
         _draw_corner_witnesses(draw, [(235, 405), (995, 405), (995, 905), (235, 905)], color=c, alpha=130)
         draw.rectangle((90, 1240, width - 90, 1335), fill=_mix(a, d, 0.35))
@@ -747,7 +622,7 @@ def render_page_image(spec: StorybookSpec, page: PageSpec, output_path: Path | s
             alpha=46,
             rotation=math.pi / 3,
         )
-        _draw_family(draw, ciro, [(235, 1020), (455, 940), (810, 1010), (1045, 910)], 180)
+        _draw_family(draw, tetra_family, [(235, 1020), (455, 940), (810, 1010), (1045, 910)], 180)
         _draw_character(draw, ciro, (width // 2, 685), 250)
         for x in range(120, width, 170):
             draw.polygon(((x, 1320), (x + 80, 1210), (x + 160, 1320)), outline=d, fill=_mix(a, c, 0.25))
@@ -772,8 +647,8 @@ def render_page_image(spec: StorybookSpec, page: PageSpec, output_path: Path | s
             alpha=38,
             rotation=math.pi / 12,
         )
-        _draw_family(draw, tessa, [(315, 625), (260, 875)], 110)
-        _draw_family(draw, ciro, [(940, 625), (1010, 880)], 120)
+        _draw_family(draw, cube_family, [(315, 625), (260, 875)], 110)
+        _draw_family(draw, tetra_family, [(940, 625), (1010, 880)], 120)
     elif page.scene == "meeting":
         _draw_yinyang(draw, width // 2, 760, 380, _mix(a, (255, 255, 255), 0.35), _mix(d, (0, 0, 0), 0.15))
         for radius in (440, 510, 580):
@@ -801,8 +676,8 @@ def render_page_image(spec: StorybookSpec, page: PageSpec, output_path: Path | s
         draw.rectangle((width // 2 - 12, 250, width // 2 + 12, 1270), fill=(255, 255, 255, 140))
         for y_mark in range(320, 1210, 110):
             draw.line((width // 2 - 70, y_mark, width // 2 + 70, y_mark + 36), fill=(255, 255, 255, 80), width=3)
-        _draw_family(draw, tessa, [(250, 950), (420, 1040), (275, 1145)], 140)
-        _draw_family(draw, ciro, [(1010, 950), (850, 1040), (990, 1145)], 140)
+        _draw_family(draw, cube_family, [(250, 950), (420, 1040), (275, 1145)], 140)
+        _draw_family(draw, tetra_family, [(1010, 950), (850, 1040), (990, 1145)], 140)
         _draw_character(draw, tessa, (500, 690), 210)
         _draw_character(draw, ciro, (780, 690), 210)
     elif page.scene == "bridge":
@@ -871,13 +746,16 @@ def render_page_image(spec: StorybookSpec, page: PageSpec, output_path: Path | s
             alpha=42,
             rotation=math.pi / 9,
         )
-        _draw_family(draw, tessa, [(185, 900), (330, 990), (485, 925)], 106)
-        _draw_family(draw, ciro, [(755, 1110), (900, 1200), (1040, 1115)], 120)
+        _draw_family(draw, cube_family, [(185, 900), (330, 990), (485, 925)], 106)
+        _draw_family(draw, tetra_family, [(755, 1110), (900, 1200), (1040, 1115)], 120)
         _draw_character(draw, tessa, (515, 775), 190)
         _draw_character(draw, ciro, (770, 785), 190)
     else:
         raise ValueError(f"Unsupported scene: {page.scene}")
 
-    _overlay_text(image, page)
+    if page.slug == "cover":
+        _draw_cover_text(image, page)
+    else:
+        draw_page_text(image, page)
     image.save(output)
     return output
