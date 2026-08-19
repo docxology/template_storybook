@@ -10,7 +10,7 @@ import pytest
 import yaml
 from PIL import Image
 
-from storybook import build_storybook_pdf, load_storybook, render_story_number, render_story_page
+from storybook import build_storybook_pdf, load_storybook, render_all_images, render_story_number, render_story_page
 from storybook.text_layout import contrast_ratio, validate_text_contrast
 
 
@@ -31,6 +31,7 @@ def _write_single_page_project(project_root: Path, *, page_width: int, page_heig
     payload = yaml.safe_load(story_path.read_text(encoding="utf-8"))
     payload["storybook"]["page_width"] = page_width
     payload["storybook"]["page_height"] = page_height
+    payload["storybook"]["trim_size"] = "custom"
     payload["pages"] = [
         {
             "number": 0,
@@ -59,6 +60,7 @@ def test_render_single_page_image_is_full_page(isolated_project, tmp_path) -> No
     assert len(colors) > 20
 
 
+@pytest.mark.slow
 def test_build_storybook_pdf_writes_manifest_and_pdf(isolated_project) -> None:
     spec = load_storybook(isolated_project)
     result = build_storybook_pdf(isolated_project)
@@ -73,6 +75,7 @@ def test_build_storybook_pdf_writes_manifest_and_pdf(isolated_project) -> None:
     assert _pdf_media_box(data) == (float(spec.page_width), float(spec.page_height))
 
 
+@pytest.mark.slow
 def test_build_storybook_pdf_respects_square_page_size(isolated_project) -> None:
     """A square (1:1) page size is not a 3:4 ratio like the default 1275x1650 config.
 
@@ -91,6 +94,7 @@ def test_build_storybook_pdf_respects_square_page_size(isolated_project) -> None
     assert _pdf_media_box(data) == (900.0, 900.0)
 
 
+@pytest.mark.slow
 def test_build_storybook_pdf_respects_widescreen_page_size(isolated_project) -> None:
     """A 16:9 page size is another ratio distinct from the default 3:4 config."""
     _write_single_page_project(isolated_project, page_width=1600, page_height=900)
@@ -101,6 +105,7 @@ def test_build_storybook_pdf_respects_widescreen_page_size(isolated_project) -> 
     assert _pdf_media_box(data) == (1600.0, 900.0)
 
 
+@pytest.mark.slow
 def test_storybook_manifest_contains_alt_text_and_contact_sheet(isolated_project) -> None:
     result = build_storybook_pdf(isolated_project)
     manifest = yaml.safe_load(result.manifest_path.read_text(encoding="utf-8"))
@@ -117,6 +122,34 @@ def test_text_overlay_palette_meets_wcag_contrast() -> None:
     assert contrast_ratio((255, 255, 255), (255, 255, 255)) == 1.0
 
 
+@pytest.mark.slow
+def test_render_all_images_renders_every_page_in_order(isolated_project) -> None:
+    """`render_all_images` is documented public API (exported from both
+    `storybook` and the top-level `src` package) but was never exercised by a
+    script or test: every script calls `render_story_page`/`render_story_number`/
+    `build_storybook_pdf` instead. Cover it directly so its own page-order and
+    stale-cleanup behavior stay verified, not merely inherited from siblings.
+    """
+    spec = load_storybook(isolated_project)
+    image_paths = render_all_images(isolated_project)
+    assert len(image_paths) == spec.page_count
+    assert [path.name for path in image_paths] == [page.filename for page in spec.pages]
+    assert all(path.is_file() for path in image_paths)
+
+
+@pytest.mark.slow
+def test_render_all_images_removes_stale_page_images(isolated_project) -> None:
+    stale_dir = isolated_project / "output" / "figures" / "storybook_pages"
+    stale_dir.mkdir(parents=True)
+    stale = stale_dir / "99_retired_page.png"
+    stale.write_bytes(b"old page")
+
+    render_all_images(isolated_project)
+
+    assert not stale.exists()
+
+
+@pytest.mark.slow
 def test_build_storybook_pdf_removes_stale_page_images(isolated_project) -> None:
     stale_dir = isolated_project / "output" / "figures" / "storybook_pages"
     stale_dir.mkdir(parents=True)
