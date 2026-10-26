@@ -80,14 +80,22 @@ uv run python scripts/pipeline/stage_05_copy.py --project templates/template_sto
 
 ## Quick start
 
-From the repository root:
+From this repository root (pipe/PDF output paths are project-relative):
 
 ```bash
-uv run python scripts/pipeline/stage_02_analysis.py --project templates/template_storybook
-open projects/templates/template_storybook/output/pdf/the-shape-between.pdf
+uv sync --extra dev
+for script in scripts/10_render_cover.py scripts/2?_render_page_*.py scripts/3?_render_page_*.py scripts/90_build_storybook_pdf.py; do
+  uv run python "$script"
+done
+open output/pdf/the-shape-between.pdf
 ```
 
-Render through the manuscript pipeline as well:
+That sequence mirrors the `analysis.scripts` list in `manuscript/config.yaml`;
+the monorepo pipeline (Stage 02) runs the same list through
+`--project templates/template_storybook`.
+
+Render the descriptive manuscript PDF (available in the monorepo pipeline
+only; this standalone repository ships its rendered outputs under `output/`):
 
 ```bash
 uv run python scripts/pipeline/stage_03_render.py --project templates/template_storybook
@@ -123,8 +131,7 @@ pipeline metadata, render formats, and the Stage-02 script list.
 ## Tests
 
 ```bash
-uv run pytest projects/templates/template_storybook/tests/ \
-  --cov=projects/templates/template_storybook/src --cov-fail-under=90
+uv run --extra dev pytest tests/ --cov=src --cov-fail-under=90
 ```
 
 The suite uses the real YAML content and renders real PNG/PDF artifacts.

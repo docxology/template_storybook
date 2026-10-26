@@ -19,23 +19,26 @@ Configuration entry points are `content/story.yaml` and
 forks.
 
 For project-scale decisions and negative controls, follow the repository memory
-and decision-record rule in
-[`docs/rules/memory_and_decision_records.md`](../../../docs/rules/memory_and_decision_records.md).
+and decision-record rule in the monorepo's `docs/rules/memory_and_decision_records.md`
+(not present in this standalone mirror).
 
 ## Verification
 
-Run from the repository root:
+Run from this repository root:
 
 ```bash
-uv run pytest projects/templates/template_storybook/tests/ --cov=projects/templates/template_storybook/src --cov-fail-under=90
-uv run python scripts/pipeline/stage_02_analysis.py --project templates/template_storybook
-uv run python scripts/pipeline/stage_03_render.py --project templates/template_storybook
-uv run python scripts/pipeline/stage_04_validate.py --project templates/template_storybook
-uv run python scripts/pipeline/stage_05_copy.py --project templates/template_storybook
+uv run --extra dev pytest tests/ --cov=src --cov-fail-under=90
+for script in scripts/10_render_cover.py scripts/2?_render_page_*.py scripts/3?_render_page_*.py scripts/90_build_storybook_pdf.py; do
+  uv run python "$script"
+done
 ```
 
+The monorepo pipeline commands (`scripts/pipeline/stage_0*.py
+--project templates/template_storybook`) run this same script list plus the
+descriptive-manuscript stages; they are unavailable in this standalone mirror.
+
 After illustration changes, inspect the full PDF and the generated
-`projects/templates/template_storybook/output/figures/storybook_contact_sheet.png`.
+`output/figures/storybook_contact_sheet.png`.
 
 ## Publishing
 

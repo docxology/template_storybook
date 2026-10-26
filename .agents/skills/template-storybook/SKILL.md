@@ -9,8 +9,8 @@ tags: [exemplar, storybook, illustration, thin-orchestrator]
 
 # template-storybook
 
-Project-scoped skill for the in-repo exemplar at
-`projects/templates/template_storybook/`. Load this when working inside the project.
+Project-scoped skill for this standalone exemplar repository (monorepo path
+`projects/templates/template_storybook/`). Load this when working inside the project.
 
 ## When to Use
 
@@ -32,8 +32,16 @@ Project-scoped skill for the in-repo exemplar at
 ## Quick Reference
 
 ```bash
-# From the repository root
-uv run pytest projects/templates/template_storybook/tests --cov=projects/templates/template_storybook/src --cov-fail-under=90
+# From this repository root
+uv run --extra dev pytest tests/ --cov=src --cov-fail-under=90
+for script in scripts/10_render_cover.py scripts/2?_render_page_*.py scripts/3?_render_page_*.py scripts/90_build_storybook_pdf.py; do
+  uv run python "$script"
+done
+```
+
+Monorepo-only pipeline commands (not available in this standalone mirror):
+
+```bash
 uv run python scripts/pipeline/stage_02_analysis.py --project templates/template_storybook
 uv run python scripts/pipeline/stage_03_render.py --project templates/template_storybook
 uv run python scripts/pipeline/stage_04_validate.py --project templates/template_storybook
@@ -55,4 +63,4 @@ uv run python scripts/pipeline/stage_05_copy.py --project templates/template_sto
 
 - Project contract: [`AGENTS.md`](../../../AGENTS.md)
 - README: [`README.md`](../../../README.md)
-- Exemplar roster: [`projects/AGENTS.md`](../../../../../AGENTS.md)
+- Exemplar roster (monorepo): `projects/AGENTS.md`

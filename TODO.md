@@ -1,8 +1,8 @@
 # template_storybook TODO
 
-This backlog is future-only. Completed validation and dated review evidence are preserved in
-[`docs/maintenance/exemplar-backlog-history.md`](../../../docs/maintenance/exemplar-backlog-history.md)
-or in source-owned generated receipts. Each active row must retain a stable ID, size, dependency,
+This backlog is future-only. Completed validation and dated review evidence are preserved in the
+monorepo's `docs/maintenance/exemplar-backlog-history.md`
+(not present in this standalone mirror) or in source-owned generated receipts. Each active row must retain a stable ID, size, dependency,
 next action, proving artifact, acceptance command, and negative control; absence of an owner or external receipt
 keeps a capability blocked rather than silently promoting it.
 
@@ -35,10 +35,10 @@ keeps a capability blocked rather than silently promoting it.
 
 ## Documentation and signposting gaps
 
-- Keep README examples clear that Stage 02 renders the storybook PDF, while
-  Stage 03 renders the descriptive manuscript PDF.
+- Keep README examples clear that the page scripts render the storybook PDF,
+  while monorepo Stage 03 renders the descriptive manuscript PDF.
 - The deterministic contact sheet is generated at
-  `output/figures/storybook_contact_sheet.png` for every Stage-02 render.
+  `output/figures/storybook_contact_sheet.png` on every full page-script render.
 
 ## Test and validator gaps
 

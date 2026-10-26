@@ -54,7 +54,17 @@ rsync -a \
 
 ## Validation Commands
 
-From the template repository root after copying into `projects/working/`:
+In this standalone mirror, run from the repository root:
+
+```bash
+uv run --extra dev pytest tests/ --cov=src --cov-fail-under=90
+for script in scripts/10_render_cover.py scripts/2?_render_page_*.py scripts/3?_render_page_*.py scripts/90_build_storybook_pdf.py; do
+  uv run python "$script"
+done
+```
+
+Monorepo equivalent, from the template repository root after copying into
+`projects/working/`:
 
 ```bash
 uv run pytest projects/working/my_storybook/tests/ \

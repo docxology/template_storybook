@@ -9,9 +9,14 @@ uv run python scripts/32_render_page_13.py
 uv run python scripts/90_build_storybook_pdf.py
 ```
 
-The repository Stage-02 command runs the configured list in
-`manuscript/config.yaml`:
+Run every script in order to build the full PDF (this mirrors the
+`analysis.scripts` list in `manuscript/config.yaml`):
 
 ```bash
-uv run python scripts/pipeline/stage_02_analysis.py --project templates/template_storybook
+for script in scripts/10_render_cover.py scripts/2?_render_page_*.py scripts/3?_render_page_*.py scripts/90_build_storybook_pdf.py; do
+  uv run python "$script"
+done
 ```
+
+The monorepo Stage-02 command runs the same list via
+`--project templates/template_storybook`.

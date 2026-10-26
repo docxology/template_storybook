@@ -1,7 +1,7 @@
 # Troubleshooting
 
-If a page is missing from the PDF, rerun Stage 02 and inspect
-`output/data/storybook_manifest.json`.
+If a page is missing from the PDF, rerun the page scripts (Stage 02 in the
+monorepo) and inspect `output/data/storybook_manifest.json`.
 
 If text is difficult to read, switch the page's `overlay_box` value in
 `content/story.yaml` or adjust the page palette. Reusable wrapping, font, and

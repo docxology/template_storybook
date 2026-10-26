@@ -3,8 +3,8 @@
 Use real content files and real render outputs. Tests may render into `tmp_path`
 or inspect deterministic artifacts, but should not mock the storybook renderer.
 
-Test files (run one directory per pytest invocation; live counts belong in
-[`docs/_generated/COUNTS.md`](../../../../docs/_generated/COUNTS.md)):
+Test files (run one directory per pytest invocation; live counts belong in the
+monorepo's `docs/_generated/COUNTS.md`):
 
 - `test_story.py` - YAML story contract, cast pairing, page lookup, and
   validation errors

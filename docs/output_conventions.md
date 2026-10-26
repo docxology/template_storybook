@@ -7,4 +7,3 @@
 - Manifest: `output/data/storybook_manifest.json` (includes page-level alt text
   and contact-sheet provenance)
 - Summary: `output/reports/storybook_summary.md`
-- Repository copied output: `output/templates/template_storybook/`
