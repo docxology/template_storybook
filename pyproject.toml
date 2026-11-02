@@ -8,7 +8,7 @@ version = "0.1.0"
 license = {text = "MIT"}
 description = "A full-page illustrated storybook exemplar with data-owned pages, shape-character generation, and ReportLab PDF assembly."
 authors = [{name = "Daniel Ari Friedman", email = "daniel@activeinference.institute"}]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "Pillow>=12.3.0",
     "pyyaml>=6.0",
