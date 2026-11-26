@@ -17,3 +17,9 @@ cube [@fuller1975synergetics]. Later pages extend that grammar through
 projection, push-pull balance, and directional growth. This gives forks a
 readable baseline. Replacing the story does not require editing Python;
 replacing the visual grammar does.
+
+The generated contact sheet preserves the story order and labels the
+thumbnail tiles by their originating page filenames. It supports
+whole-book visual review before checking individual illustrations.
+
+![The native storybook producer arranges the rendered cover, publication page, and story pages in reading order.](../../output/figures/storybook_contact_sheet.png){#fig:storybook_contact_sheet width=75% fig-alt="A grid of labeled page thumbnails begins with the cover and proceeds through the contrasting shape families, bridge, shadow, lantern, garden, and shared home."}

@@ -1,18 +1,30 @@
-# Rendering Pipeline
+# Rendering pipeline
 
-Standalone, run the page scripts in order (the list in `manuscript/config.yaml`):
+The [book source](../content/story.yaml) declares page dimensions,
+cast, ordered pages, text, captions, and scene settings. The
+[manuscript configuration](manuscript/config.yaml) declares the template
+analysis scripts and the descriptive render formats.
 
-```bash
-for script in scripts/10_render_cover.py scripts/2?_render_page_*.py scripts/3?_render_page_*.py scripts/90_build_storybook_pdf.py; do
-  uv run python "$script"
-done
-```
+## Build the illustrated book
 
-In the monorepo, Stage 02 runs the same list from `manuscript/config.yaml`
-through `--project templates/template_storybook`.
+After [installing the lockfile](quickstart.md), call
+`uv run --no-sync python scripts/90_build_storybook_pdf.py`. The builder
+revalidates the YAML, removes stale PNGs from the page-image directory,
+rerenders every page, and assembles the PDF. Run an individual
+[page script](../scripts/README.md) to render an illustration for review.
 
-The cover and each numbered page render first as PNG files in
-`output/figures/storybook_pages/`. The final script assembles those images into
-`output/pdf/the-shape-between.pdf`, writes the deterministic inspection sheet
-to `output/figures/storybook_contact_sheet.png`, and writes manifest files under
-`output/data/` and `output/reports/`.
+The pinned shared template can invoke the configured script list through
+Stage 02 when the project is registered there. The standalone builder
+provides the artifacts consumed by the
+[descriptive manuscript render](manuscript/README.md).
+
+## Verify the artifacts
+
+Compare the PDF and the contact sheet with the YAML page order. Use the
+[manifest](../output/data/storybook_manifest.json) to inspect each page's
+alt text and raster text contrast audit. Each storybook PDF page contains a
+full-page image. The manifest carries its page descriptions separately.
+
+The [output map](output_conventions.md) locates the book and its supporting
+files. The [test suite](../tests/) checks story validation, raster dimensions,
+PDF assembly, and contrast on generated content.

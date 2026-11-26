@@ -2,9 +2,9 @@
 
 `template_storybook` demonstrates a public, standalone picture-book workflow in
 the research template repository. The bundled project renders a deterministic
-fourteen-page storybook subtitled *A geometric fable of belonging, bracing, and
+storybook subtitled *A geometric fable of belonging, bracing, and
 reciprocal form*: a clear cover, a publication-and-acknowledgements page, and
-twelve story pages in which a child tetrahedron raised by cubes meets a child
+story pages in which a child tetrahedron raised by cubes meets a child
 cube raised by tetrahedra. The story uses a large reciprocal symbol, a
 tetrahedron-inside-cube stability spread, a shadow-projection lesson, a
 tensegrity lantern, and a vector garden to frame belonging without sameness:

@@ -9,3 +9,8 @@ script can run against a temporary project root.
 
 The generated manifest records the cast, page list, and render paths. That
 manifest is the compact evidence surface for the primary artifact.
+
+Accessibility checks cover page-level alt text in the manifest and a raster
+contrast audit of the rendered text. The full-page storybook PDF contains
+images. The build stores the descriptions in the manifest for separate use
+[@storybook-source].

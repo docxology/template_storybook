@@ -1,18 +1,21 @@
-# Quickstart
+# Quick start
+
+Install [uv](https://docs.astral.sh/uv/). The default interpreter comes
+from [`.python-version`](../.python-version), and the package declares its
+supported Python range in [`pyproject.toml`](../pyproject.toml).
+
+Run from the root of a disposable checkout. Regeneration writes into
+`output/`, which contains committed release snapshots in this repository.
 
 ```bash
-uv sync --extra dev
-for script in scripts/10_render_cover.py scripts/2?_render_page_*.py scripts/3?_render_page_*.py scripts/90_build_storybook_pdf.py; do
-  uv run python "$script"
-done
-open output/pdf/the-shape-between.pdf
+uv sync --locked --extra dev
+uv run --no-sync python scripts/90_build_storybook_pdf.py
+uv run --no-sync pytest tests/ --cov=src --cov-fail-under=90
 ```
 
-Run tests:
-
-```bash
-uv run --extra dev pytest tests/ --cov=src --cov-fail-under=90
-```
-
-The monorepo pipeline commands (`scripts/pipeline/stage_0*.py --project
-templates/template_storybook`) are not present in this standalone mirror.
+Open `output/pdf/the-shape-between.pdf` and
+`output/figures/storybook_contact_sheet.png`. The final builder renders
+every story page before assembling the PDF. The separate page scripts
+are useful for iterating on one image. See the
+[rendering pipeline](rendering_pipeline.md) and the
+[descriptive manuscript build](manuscript/README.md).

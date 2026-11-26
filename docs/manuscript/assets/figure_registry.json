@@ -1,0 +1,14 @@
+{
+  "schema_version": "template-storybook-manuscript-figure-registry-v1",
+  "figures": [
+    {
+      "label": "fig:storybook_contact_sheet",
+      "filename": "storybook_contact_sheet.png",
+      "caption": "The native storybook producer arranges the rendered cover, publication page, and story pages in reading order.",
+      "generated_by": "storybook.rendering.build_contact_sheet",
+      "metadata": {
+        "alt_text": "A grid of labeled page thumbnails begins with the cover and proceeds through the contrasting shape families, bridge, shadow, lantern, garden, and shared home."
+      }
+    }
+  ]
+}
