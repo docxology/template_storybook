@@ -10,7 +10,7 @@ uv run python scripts/90_build_storybook_pdf.py
 ```
 
 Run every script in order to build the full PDF (this mirrors the
-`analysis.scripts` list in `manuscript/config.yaml`):
+`analysis.scripts` list in `docs/manuscript/config.yaml`):
 
 ```bash
 for script in scripts/10_render_cover.py scripts/2?_render_page_*.py scripts/3?_render_page_*.py scripts/90_build_storybook_pdf.py; do

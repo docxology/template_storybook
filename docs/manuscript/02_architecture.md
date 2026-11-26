@@ -17,3 +17,9 @@ The page scripts are deliberately repetitive. Their job is visible
 orchestration: cover, page 1, page 2, and so on. The repetition keeps the
 creative page surface easy to inspect while preventing scripts from becoming
 hidden rendering engines.
+
+The final producer rerenders the ordered page list before assembly. It
+creates an invariant ReportLab canvas, draws each page image to the stated
+page dimensions, and writes a manifest, a summary, and a contact sheet. This
+keeps source ordering separate from the thumbnail grid used for review
+[@storybook-source].

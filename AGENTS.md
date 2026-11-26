@@ -15,7 +15,7 @@ using project-local source code and thin Stage-02 scripts.
 - `output/` is generated; regenerate it through scripts rather than editing it.
 
 Configuration entry points are `content/story.yaml` and
-`manuscript/config.yaml`; keep `manuscript/config.yaml.example` aligned for
+`docs/manuscript/config.yaml`; keep `docs/manuscript/config.yaml.example` aligned for
 forks.
 
 For project-scale decisions and negative controls, follow the repository memory
@@ -27,7 +27,7 @@ and decision-record rule in the monorepo's `docs/rules/memory_and_decision_recor
 Run from this repository root:
 
 ```bash
-uv run --extra dev pytest tests/ --cov=src --cov-fail-under=90
+uv run --locked --extra dev pytest tests/ --cov=src --cov-fail-under=90
 for script in scripts/10_render_cover.py scripts/2?_render_page_*.py scripts/3?_render_page_*.py scripts/90_build_storybook_pdf.py; do
   uv run python "$script"
 done
