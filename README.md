@@ -7,7 +7,7 @@ rendered pages and their text overlays.
 
 - [Start a local build](docs/quickstart.md)
 - [Read the documentation](docs/README.md)
-- [Render the descriptive manuscript](docs/manuscript/README.md)
+- [Read or render the descriptive manuscript](docs/manuscript/README.md)
 - [Read the published storybook snapshot](output/pdf/the-shape-between.pdf)
 
 ![Cover of The Shape Between](output/figures/storybook_pages/00_cover.png)

@@ -6,6 +6,12 @@ verification. The story pages come from [`content/story.yaml`](../../content/sto
 The [figure registry](assets/figure_registry.json) describes the contact
 sheet produced during the book build.
 
+## Read the published manuscript
+
+Read the [published HTML manuscript](https://6a47fd2233010f4eb138cdcd--tranquil-kleicha-0c9203.netlify.app/) or download the [v0.1.0 manuscript PDF](https://github.com/docxology/template_storybook/releases/download/v0.1.0/template_storybook_combined.pdf).
+
+GitHub Pages deployment status is tracked in [issue #8](https://github.com/docxology/template_storybook/issues/8).
+
 ## Render and validate
 
 Use a disposable source checkout and a separate checkout of the
