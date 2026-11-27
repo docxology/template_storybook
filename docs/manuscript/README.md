@@ -14,7 +14,8 @@ GitHub Pages deployment status is tracked in [issue #8](https://github.com/docxo
 
 ## Render and validate
 
-Use a disposable source checkout and a separate checkout of the
+Name the disposable source checkout directory `template_storybook` on disk
+so Stage 04 can find `template_storybook_combined.pdf`. Use a separate checkout of the
 [pinned template](https://github.com/docxology/template/tree/87704feae0a4490ef7dad9c931d268e8c30273c2).
 Install Git, uv, Pandoc, XeLaTeX, and the PDF and Beamer dependencies in
 the template [setup guide](https://github.com/docxology/template/blob/87704feae0a4490ef7dad9c931d268e8c30273c2/docs/guides/startup-and-setup.md).
